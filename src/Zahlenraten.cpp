@@ -1,7 +1,7 @@
 //============================================================================
 // Name        : Zahlenraten.cpp
 // Author      : Peer Ole Rölke
-// Version     : 1.5 (added an easy mode)
+// Version     : 1.7 (added a log)
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
 //============================================================================
@@ -76,12 +76,42 @@ void BubbleSort(int sortArray[], int l)
     }
 }
 
+void twoPlayerMode(){
+
+}
+
+int onePlayerMode(int Modus){
+
+	int zuRatendeZahl, gerateneZahl, i = 0;
+	zuRatendeZahl = randomNumber();
+	while(zuRatendeZahl != gerateneZahl){
+		i++;
+		cout <<"Dies ist ihr " << i <<". Versuch. Geben sie bitte einen Tipp ab: \n";
+		cin >> gerateneZahl;
+		if(gerateneZahl < zuRatendeZahl){
+			cout <<"Ihre Eingabe war leider zu klein! \n";
+			if(Modus == 0){
+				vereinfachterModus(zuRatendeZahl, gerateneZahl);
+			}
+		}
+		else if(gerateneZahl > zuRatendeZahl){
+			cout <<"Ihre Eingabe war leider zu groß! \n";
+			if(Modus == 0){
+				vereinfachterModus(zuRatendeZahl, gerateneZahl);
+			}
+		}
+		else{
+			cout <<"Glückwunsch! Sie haben im " << i << ". Versuch richtig geraten! \n";
+		}
+	}
+	return i;
+}
 
 int main() {
 
 	int Modus, AnzahlSpiele = 0;
 	char ja;
-	// Array%3; == 0: Spielergebnis, == 1: Spieldurchlauf, == 2: welcher Spieler (noch unbesetzt)
+	// Hinweis: Array%3; == 0: Spielergebnis, == 1: Spieldurchlauf, == 2: welcher Spieler (noch unbesetzt)
 	int historie[99];
 
 	cout <<"Herzlich Willkommen beim Spiel: Zahlenraten \n";
@@ -89,7 +119,8 @@ int main() {
 	cin >> Modus;
 	srand(time(NULL));
 	do{
-		int zuRatendeZahl, gerateneZahl, i = 1;
+		int i = onePlayerMode(Modus);
+		/*int zuRatendeZahl, gerateneZahl, i = 1;
 		zuRatendeZahl = randomNumber();
 		while(zuRatendeZahl != gerateneZahl){
 			cout <<"Dies ist ihr " << i <<". Versuch. Geben sie bitte einen Tipp ab: \n";
@@ -112,7 +143,9 @@ int main() {
 				historie[(AnzahlSpiele * 3)] = i;
 			}
 			i++;
-		}
+		}*/
+		historie[(AnzahlSpiele * 3) +1] = AnzahlSpiele +1;
+		historie[(AnzahlSpiele * 3)] = i;
 		AnzahlSpiele++;
 		cout << "Wollen Sie noch einmal spielen? (j/n) \n";
 		cin >> ja;
