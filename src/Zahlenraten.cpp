@@ -11,6 +11,7 @@
 #include <time.h>
 #include <math.h>
 #include <string>
+#include <tuple>
 
 using namespace std;
 
@@ -55,7 +56,7 @@ void vereinfachterModus(int zuRatendeZahl, int gerateneZahl){
 }
 
 
-void BubbleSort(int sortArray[], int l)
+void BubbleSort(int sortArray[], int l, int AnzahlSpieler)
 {
     int i, j, tempA;
     for (i = 0; i < l; i++)
@@ -71,13 +72,38 @@ void BubbleSort(int sortArray[], int l)
 				tempA = sortArray[(j*3)+1];
 				sortArray[(j*3)+1] = sortArray[(j*3)+4];
 				sortArray[(j*3)+4] = tempA;
+				if(AnzahlSpieler != 1){
+					tempA = sortArray[(j*3)+2];
+					sortArray[(j*3)+2] = sortArray[(j*3)+5];
+					sortArray[(j*3)+5] = tempA;
+				}
             }
         }
     }
 }
 
-void twoPlayerMode(){
-
+tuple<int, int> morePlayerMode(int AnzahlSpieler){
+	int zuRatendeZahl, gerateneZahl, Gewinner, i = 0;
+	zuRatendeZahl = randomNumber();
+	while(zuRatendeZahl != gerateneZahl){
+		i++;
+		for(int j = 1; j<= AnzahlSpieler; j++){
+			cout <<"Dies ist ihr " << i <<". Versuch, Spieler " <<j <<". Geben sie bitte einen Tipp ab: \n";
+			cin >> gerateneZahl;
+			if(gerateneZahl < zuRatendeZahl){
+				cout <<"Ihre Eingabe war leider zu klein! \n";
+			}
+			else if(gerateneZahl > zuRatendeZahl){
+				cout <<"Ihre Eingabe war leider zu groß! \n";
+			}
+			else{
+				cout <<"Glückwunsch, Spieler " << j <<"! Sie haben im " << i << ". Versuch richtig geraten! \n";
+				Gewinner = j;
+				j = AnzahlSpieler +1;
+			}
+		}
+	}
+	return {i, Gewinner};
 }
 
 int onePlayerMode(int Modus){
@@ -109,55 +135,51 @@ int onePlayerMode(int Modus){
 
 int main() {
 
-	int Modus, AnzahlSpiele = 0;
+	int Modus, AnzahlSpiele = 0, AnzahlSpieler = 1;
 	char ja;
 	// Hinweis: Array%3; == 0: Spielergebnis, == 1: Spieldurchlauf, == 2: welcher Spieler (noch unbesetzt)
 	int historie[99];
 
 	cout <<"Herzlich Willkommen beim Spiel: Zahlenraten \n";
-	cout <<"Wollen Sie den normalen Modus (1) oder den vereinfachten Modus (0) spielen? \n";
+	cout <<"Wollen Sie den normalen Modus (1), den vereinfachten Modus (0) oder den Mehrspielermodus (2) spielen? \n";
 	cin >> Modus;
+	if(Modus == 2){
+		cout <<"Mit wievielen Spielern wollen sie spielen?\n";
+		cin >> AnzahlSpieler;
+	}
+	//fragwürdiger Code???
+	//AnzahlSpieler = (Modus == 2) ? cin >> AnzahlSpieler : 1;
 	srand(time(NULL));
 	do{
-		int i = onePlayerMode(Modus);
-		/*int zuRatendeZahl, gerateneZahl, i = 1;
-		zuRatendeZahl = randomNumber();
-		while(zuRatendeZahl != gerateneZahl){
-			cout <<"Dies ist ihr " << i <<". Versuch. Geben sie bitte einen Tipp ab: \n";
-			cin >> gerateneZahl;
-			if(gerateneZahl < zuRatendeZahl){
-				cout <<"Ihre Eingabe war leider zu klein! \n";
-				if(Modus == 0){
-					vereinfachterModus(zuRatendeZahl, gerateneZahl);
-				}
-			}
-			else if(gerateneZahl > zuRatendeZahl){
-				cout <<"Ihre Eingabe war leider zu groß! \n";
-				if(Modus == 0){
-					vereinfachterModus(zuRatendeZahl, gerateneZahl);
-				}
-			}
-			else{
-				cout <<"Glückwunsch! Sie haben im " << i << ". Versuch richtig geraten! \n";
-				historie[(AnzahlSpiele * 3) +1] = AnzahlSpiele +1;
-				historie[(AnzahlSpiele * 3)] = i;
-			}
-			i++;
-		}*/
+		int i, winningPlayer;
+		if(AnzahlSpieler == 1){
+			i = onePlayerMode(Modus);
+		}else{
+			tie(i, winningPlayer) = morePlayerMode(AnzahlSpieler);
+		}
 		historie[(AnzahlSpiele * 3) +1] = AnzahlSpiele +1;
 		historie[(AnzahlSpiele * 3)] = i;
+		if(AnzahlSpieler != 1){
+			historie[(AnzahlSpiele * 3) +2] = winningPlayer;
+		}
 		AnzahlSpiele++;
 		cout << "Wollen Sie noch einmal spielen? (j/n) \n";
 		cin >> ja;
 	}while(ja == 'j' || ja == 'J');
 	cout << "Auf Wiedersehen!\n" <<"Historie: \n";
-	BubbleSort(historie, AnzahlSpiele);
+	BubbleSort(historie, AnzahlSpiele, AnzahlSpieler);
 	for(int j = 0; j<AnzahlSpiele; j++){
 		cout <<historie[(j*3)+1] <<". Spiel:\t";
 	}
 	cout <<"\n";
 	for(int j = 0; j<AnzahlSpiele; j++){
 		cout<< historie[(j*3)] <<" Versuche\t";
+	}
+	cout <<"\n";
+	if(Modus == 2){
+		for(int j = 0; j<AnzahlSpiele; j++){
+			cout <<historie[(j*3)+2] << ". Spieler\t";
+		}
 	}
 	return 0;
 }
