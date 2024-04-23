@@ -1,7 +1,7 @@
 //============================================================================
 // Name        : Zahlenraten.cpp
 // Author      : Peer Ole Rölke
-// Version     : 1.7 (added a log)
+// Version     : 2.0 (added a competitive more player mode  1.7 (added a log)
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
 //============================================================================
@@ -17,6 +17,7 @@ using namespace std;
 
 int randomNumber(){
 	int zuRatendeZahl, groessteZahl;
+	srand(time(NULL));
 	cout <<"\nBitte geben sie die größte Zahl ein, bis zu derer Sie raten wollen: \n";
 	cin >> groessteZahl;
 	zuRatendeZahl = rand() % (groessteZahl + 1);
@@ -147,9 +148,6 @@ int main() {
 		cout <<"Mit wievielen Spielern wollen sie spielen?\n";
 		cin >> AnzahlSpieler;
 	}
-	//fragwürdiger Code???
-	//AnzahlSpieler = (Modus == 2) ? cin >> AnzahlSpieler : 1;
-	srand(time(NULL));
 	do{
 		int i, winningPlayer;
 		if(AnzahlSpieler == 1){
