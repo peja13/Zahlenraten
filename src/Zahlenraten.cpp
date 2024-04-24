@@ -88,20 +88,25 @@ tuple<int, int> morePlayerMode(int AnzahlSpieler){
 	zuRatendeZahl = randomNumber();
 	while(zuRatendeZahl != gerateneZahl){
 		i++;
-		for(int j = 1; j<= AnzahlSpieler; j++){
-			cout <<"Dies ist ihr " << i <<". Versuch, Spieler " <<j <<". Geben sie bitte einen Tipp ab: \n";
-			cin >> gerateneZahl;
-			if(gerateneZahl < zuRatendeZahl){
-				cout <<"Ihre Eingabe war leider zu klein! \n";
+		if(AnzahlSpieler >= 2){
+			for(int j = 1; j<= AnzahlSpieler; j++){
+				cout <<"Dies ist ihr " << i <<". Versuch, Spieler " <<j <<". Geben sie bitte einen Tipp ab: \n";
+				cin >> gerateneZahl;
+				if(gerateneZahl < zuRatendeZahl){
+					cout <<"Ihre Eingabe war leider zu klein! \n";
+				}
+				else if(gerateneZahl > zuRatendeZahl){
+					cout <<"Ihre Eingabe war leider zu groß! \n";
+				}
+				else{
+					cout <<"Glückwunsch, Spieler " << j <<"! Sie haben im " << i << ". Versuch richtig geraten! \n";
+					Gewinner = j;
+					j = AnzahlSpieler +1;
+				}
 			}
-			else if(gerateneZahl > zuRatendeZahl){
-				cout <<"Ihre Eingabe war leider zu groß! \n";
-			}
-			else{
-				cout <<"Glückwunsch, Spieler " << j <<"! Sie haben im " << i << ". Versuch richtig geraten! \n";
-				Gewinner = j;
-				j = AnzahlSpieler +1;
-			}
+		}
+		else{
+
 		}
 	}
 	return {i, Gewinner};
@@ -142,7 +147,7 @@ int main() {
 	int historie[99];
 
 	cout <<"Herzlich Willkommen beim Spiel: Zahlenraten \n";
-	cout <<"Wollen Sie den normalen Modus (1), den vereinfachten Modus (0) oder den Mehrspielermodus (2) spielen? \n";
+	cout <<"Wollen Sie den normalen Modus (1), den vereinfachten Modus (0), den Mehrspielermodus (2) oder gegen den Computer (3) spielen? \n";
 	cin >> Modus;
 	if(Modus == 2){
 		cout <<"Mit wievielen Spielern wollen sie spielen?\n";
@@ -150,10 +155,12 @@ int main() {
 	}
 	do{
 		int i, winningPlayer;
-		if(AnzahlSpieler == 1){
+		if(Modus == 0 || Modus == 1){
 			i = onePlayerMode(Modus);
-		}else{
+		}else if(Modus == 2){
 			tie(i, winningPlayer) = morePlayerMode(AnzahlSpieler);
+		}else if(Modus == 3){
+
 		}
 		historie[(AnzahlSpiele * 3) +1] = AnzahlSpiele +1;
 		historie[(AnzahlSpiele * 3)] = i;
