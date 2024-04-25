@@ -1,7 +1,7 @@
 //============================================================================
 // Name        : Zahlenraten.cpp
 // Author      : Peer Ole Rölke
-// Version     : 2.0 (added a competitive more player mode  1.7 (added a log)
+// Version     : 2.1 (added a PC controlled Player)	2.0 (added a competitive more player mode)	1.7 (added a log)
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
 //============================================================================
@@ -15,14 +15,11 @@
 
 using namespace std;
 
-int randomNumber(){
-	int zuRatendeZahl, groessteZahl;
+int randomNumber(int groessteZahl){
+	int zufallszahl;
 	srand(time(NULL));
-	cout <<"\nBitte geben sie die größte Zahl ein, bis zu derer Sie raten wollen: \n";
-	cin >> groessteZahl;
-	zuRatendeZahl = rand() % (groessteZahl + 1);
-	cout <<"Die zu ratende Zahl wurde generiert. \n\n";
-	return zuRatendeZahl;
+	zufallszahl = rand() % (groessteZahl + 1);
+	return zufallszahl;
 }
 
 void vereinfachterModus(int zuRatendeZahl, int gerateneZahl){
@@ -73,70 +70,72 @@ void BubbleSort(int sortArray[], int l, int AnzahlSpieler)
 				tempA = sortArray[(j*3)+1];
 				sortArray[(j*3)+1] = sortArray[(j*3)+4];
 				sortArray[(j*3)+4] = tempA;
-				if(AnzahlSpieler != 1){
-					tempA = sortArray[(j*3)+2];
-					sortArray[(j*3)+2] = sortArray[(j*3)+5];
-					sortArray[(j*3)+5] = tempA;
-				}
+				tempA = sortArray[(j*3)+2];
+				sortArray[(j*3)+2] = sortArray[(j*3)+5];
+				sortArray[(j*3)+5] = tempA;
             }
         }
     }
 }
 
-tuple<int, int> morePlayerMode(int AnzahlSpieler){
-	int zuRatendeZahl, gerateneZahl, Gewinner, i = 0;
-	zuRatendeZahl = randomNumber();
+int pcPlayer(int zuRatendeZahl, int gerateneZahl, int groessteZahl){
+	int pcZahl;
+	if(gerateneZahl < zuRatendeZahl){
+		pcZahl = randomNumber(groessteZahl - gerateneZahl);
+		pcZahl += gerateneZahl;
+	}
+	else if(gerateneZahl > zuRatendeZahl){
+		pcZahl = randomNumber(gerateneZahl);
+	}
+	cout << "Die geratene Zahl des Computers beträgt " << pcZahl << ". \n";
+	return pcZahl;
+}
+
+tuple<int, int> morePlayerMode(int AnzahlSpieler, int Modus){
+	int zuRatendeZahl, gerateneZahl, Gewinner, i = 0, groessteZahl;
+	cout <<"\nBitte geben sie die größte Zahl ein, bis zu derer Sie raten wollen: \n";
+	cin >> groessteZahl;
+	zuRatendeZahl = randomNumber(groessteZahl);
+	cout <<"Die zu ratende Zahl wurde generiert. \n\n";
 	while(zuRatendeZahl != gerateneZahl){
 		i++;
-		if(AnzahlSpieler >= 2){
-			for(int j = 1; j<= AnzahlSpieler; j++){
-				cout <<"Dies ist ihr " << i <<". Versuch, Spieler " <<j <<". Geben sie bitte einen Tipp ab: \n";
-				cin >> gerateneZahl;
-				if(gerateneZahl < zuRatendeZahl){
-					cout <<"Ihre Eingabe war leider zu klein! \n";
-				}
-				else if(gerateneZahl > zuRatendeZahl){
-					cout <<"Ihre Eingabe war leider zu groß! \n";
-				}
-				else{
-					cout <<"Glückwunsch, Spieler " << j <<"! Sie haben im " << i << ". Versuch richtig geraten! \n";
-					Gewinner = j;
-					j = AnzahlSpieler +1;
+		for(int j = 1; j<= AnzahlSpieler; j++){
+			cout <<"Dies ist ihr " << i <<". Versuch, Spieler " <<j <<". Geben sie bitte einen Tipp ab: \n";
+			cin >> gerateneZahl;
+			if(gerateneZahl < zuRatendeZahl){
+				cout <<"Ihre Eingabe war leider zu klein! \n";
+				if(Modus == 0){
+					vereinfachterModus(zuRatendeZahl, gerateneZahl);
 				}
 			}
-		}
-		else{
+			else if(gerateneZahl > zuRatendeZahl){
+				cout <<"Ihre Eingabe war leider zu groß! \n";
+				if(Modus == 0){
+					vereinfachterModus(zuRatendeZahl, gerateneZahl);
+				}
+			}
+			else{
+				cout <<"Glückwunsch, Spieler " << j <<"! Sie haben im " << i << ". Versuch richtig geraten! \n";
+				Gewinner = j;
+				j = AnzahlSpieler +1;
+			}
 
+			if(Modus == 3 && j <= AnzahlSpieler){
+				gerateneZahl = pcPlayer(zuRatendeZahl, gerateneZahl, groessteZahl);
+				if(gerateneZahl < zuRatendeZahl){
+					cout << "Diese Zahl ist zu klein. \n";
+				}
+				else if(gerateneZahl > zuRatendeZahl){
+					cout << "Diese Zahl ist zu groß. \n";
+				}
+				else{
+					cout << "Der Computer hat richtig geraten und so gewonnen.\n Die richtige Zahl ist: " << gerateneZahl;
+					Gewinner = 0;
+				}
+			}
 		}
 	}
 	return {i, Gewinner};
-}
-
-int onePlayerMode(int Modus){
-
-	int zuRatendeZahl, gerateneZahl, i = 0;
-	zuRatendeZahl = randomNumber();
-	while(zuRatendeZahl != gerateneZahl){
-		i++;
-		cout <<"Dies ist ihr " << i <<". Versuch. Geben sie bitte einen Tipp ab: \n";
-		cin >> gerateneZahl;
-		if(gerateneZahl < zuRatendeZahl){
-			cout <<"Ihre Eingabe war leider zu klein! \n";
-			if(Modus == 0){
-				vereinfachterModus(zuRatendeZahl, gerateneZahl);
-			}
-		}
-		else if(gerateneZahl > zuRatendeZahl){
-			cout <<"Ihre Eingabe war leider zu groß! \n";
-			if(Modus == 0){
-				vereinfachterModus(zuRatendeZahl, gerateneZahl);
-			}
-		}
-		else{
-			cout <<"Glückwunsch! Sie haben im " << i << ". Versuch richtig geraten! \n";
-		}
-	}
-	return i;
 }
 
 int main() {
@@ -152,21 +151,15 @@ int main() {
 	if(Modus == 2){
 		cout <<"Mit wievielen Spielern wollen sie spielen?\n";
 		cin >> AnzahlSpieler;
+	}else{
+		AnzahlSpieler = 1;
 	}
 	do{
 		int i, winningPlayer;
-		if(Modus == 0 || Modus == 1){
-			i = onePlayerMode(Modus);
-		}else if(Modus == 2){
-			tie(i, winningPlayer) = morePlayerMode(AnzahlSpieler);
-		}else if(Modus == 3){
-
-		}
+		tie(i, winningPlayer) = morePlayerMode(AnzahlSpieler, Modus);
 		historie[(AnzahlSpiele * 3) +1] = AnzahlSpiele +1;
 		historie[(AnzahlSpiele * 3)] = i;
-		if(AnzahlSpieler != 1){
-			historie[(AnzahlSpiele * 3) +2] = winningPlayer;
-		}
+		historie[(AnzahlSpiele * 3) +2] = winningPlayer;
 		AnzahlSpiele++;
 		cout << "Wollen Sie noch einmal spielen? (j/n) \n";
 		cin >> ja;
@@ -181,9 +174,13 @@ int main() {
 		cout<< historie[(j*3)] <<" Versuche\t";
 	}
 	cout <<"\n";
-	if(Modus == 2){
+	if(Modus == 2 || Modus == 3){
 		for(int j = 0; j<AnzahlSpiele; j++){
-			cout <<historie[(j*3)+2] << ". Spieler\t";
+			if(historie[(j*3)+2] == 0){
+				cout << "PC\t\t";
+			}else{
+				cout <<historie[(j*3)+2] << ". Spieler\t";
+			}
 		}
 	}
 	return 0;
