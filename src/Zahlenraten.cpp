@@ -18,7 +18,7 @@ using namespace std;
 //Deklaration der Funktionen
 int randomNumber(int groessteZahl);
 void vereinfachterModus(int zuRatendeZahl, int gerateneZahl);
-void BubbleSort(int sortArray[], int l, int AnzahlSpieler);
+void BubbleSort(int sortArray[3][99], int l, int AnzahlSpieler);
 int pcPlayer(int zuRatendeZahl, int gerateneZahl, int groessteZahl);
 tuple<int, int> morePlayerMode(int AnzahlSpieler, int Modus);
 
@@ -29,7 +29,8 @@ int main() {
 	int Modus, AnzahlSpiele = 0, AnzahlSpieler = 1;
 	char ja;
 	// Hinweis: Array%3; == 0: Spielergebnis, == 1: Spieldurchlauf, == 2: welcher Spieler (noch unbesetzt)
-	int historie[99];
+	//int historie[99];
+	int historie[3][99];
 
 	cout <<"Herzlich Willkommen beim Spiel: Zahlenraten \n";
 	cout <<"Wollen Sie den normalen Modus (1), den vereinfachten Modus (0), den Mehrspielermodus (2) oder gegen den Computer (3) spielen? \n";
@@ -43,9 +44,9 @@ int main() {
 	do{
 		int i, winningPlayer;
 		tie(i, winningPlayer) = morePlayerMode(AnzahlSpieler, Modus);
-		historie[(AnzahlSpiele * 3) +1] = AnzahlSpiele +1;
-		historie[(AnzahlSpiele * 3)] = i;
-		historie[(AnzahlSpiele * 3) +2] = winningPlayer;
+		historie[1][AnzahlSpiele] = AnzahlSpiele +1;
+		historie[0][AnzahlSpiele] = i;
+		historie[2][AnzahlSpiele] = winningPlayer;
 		AnzahlSpiele++;
 		cout << "Wollen Sie noch einmal spielen? (j/n) \n";
 		cin >> ja;
@@ -53,19 +54,19 @@ int main() {
 	cout << "Auf Wiedersehen!\n" <<"Historie: \n";
 	BubbleSort(historie, AnzahlSpiele, AnzahlSpieler);
 	for(int j = 0; j<AnzahlSpiele; j++){
-		cout <<historie[(j*3)+1] <<". Spiel:\t";
+		cout <<historie[1][j] <<". Spiel:\t";
 	}
 	cout <<"\n";
 	for(int j = 0; j<AnzahlSpiele; j++){
-		cout<< historie[(j*3)] <<" Versuche\t";
+		cout<< historie[0][j] <<" Versuche\t";
 	}
 	cout <<"\n";
 	if(Modus == 2 || Modus == 3){
 		for(int j = 0; j<AnzahlSpiele; j++){
-			if(historie[(j*3)+2] == 0){
+			if(historie[2][j] == 0){
 				cout << "PC\t\t";
 			}else{
-				cout <<historie[(j*3)+2] << ". Spieler\t";
+				cout <<historie[2][j] << ". Spieler\t";
 			}
 		}
 	}
@@ -170,24 +171,25 @@ int randomNumber(int groessteZahl){
 	return zufallszahl;
 }
 
-void BubbleSort(int sortArray[], int l, int AnzahlSpieler){
-    int i, j, tempA;
-    for (i = 0; i < l; i++)
+void BubbleSort(int sortArray[3][99], int l, int AnzahlSpieler){
+    for (int i = 0; i < l; i++)
     {
-        for (j = 0; j < l-i-1; j++)
+        for (int j = 0; j < l-i-1; j++)
         {
             // Comparing consecutive elements and switching values when value at j > j+1.
-            if (sortArray[j*3] > sortArray[(j*3)+3])
+            if (sortArray[0][j] > sortArray[0][j+1])
             {
-				tempA = sortArray[(j*3)];
-				sortArray[(j*3)] = sortArray[(j*3)+3];
-				sortArray[(j*3)+3] = tempA;
-				tempA = sortArray[(j*3)+1];
+				for(int k = 0; k<3; k++){
+					int tempA = sortArray[k][j];
+					sortArray[k][j] = sortArray[k][j+1];
+					sortArray[k][j+1] = tempA;
+				}
+				/*tempA = sortArray[(j*3)+1];
 				sortArray[(j*3)+1] = sortArray[(j*3)+4];
 				sortArray[(j*3)+4] = tempA;
 				tempA = sortArray[(j*3)+2];
 				sortArray[(j*3)+2] = sortArray[(j*3)+5];
-				sortArray[(j*3)+5] = tempA;
+				sortArray[(j*3)+5] = tempA;*/
             }
         }
     }
